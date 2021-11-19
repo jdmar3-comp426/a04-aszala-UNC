@@ -59,7 +59,7 @@ app.use("/app/user/:id", (req, res) => {
 	res.status(200).json(stmt[0]);
 });
 
-app.patch("/app/update/:id", (req, res) => {
+app.patch("/app/update/user/:id", (req, res) => {
 	const id = req.params.id;
 	const user = req.body.user;
 	const pass = md5(req.body.pass);
