@@ -28,10 +28,7 @@ app.get("/app/", (req, res, next) => {
 // CREATE a new user (HTTP method POST) at endpoint /app/new/
 
 // READ a list of all users (HTTP method GET) at endpoint /app/users/
-app.get("/app/users", (req, res) => {	
-	const stmt = db.prepare("SELECT * FROM userinfo").all();
-	res.status(200).json(stmt);
-});
+
 
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
 
@@ -45,6 +42,24 @@ app.use(function(req, res){
     res.status(404);
 });
 
-app.post("/app/users", (req, res) => {
+app.post("/app/new/user", (req, res) => {
+	res.status(200);
+});
+
+app.get("/app/users", (req, res) => {	
+	const stmt = db.prepare("SELECT * FROM userinfo").all();
+	res.status(200).json(stmt);
+});
+
+app.get("/app/user/:id", (req, res) => {
+	res.status(200);
+});
+
+app.patch("/app/update/:id", (req, res) => {
+	res.status(200);
+});
+
+
+app.delete("/app/delete/user/:id", (req, res) => {
 	res.status(200);
 });
