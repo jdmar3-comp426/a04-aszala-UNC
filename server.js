@@ -53,17 +53,18 @@ app.use("/app/users/", (req, res) => {
 });
 
 app.use("/app/user/:id", (req, res) => {
-	const user = req.body.user;
-	const pass = md5(req.body.pass);
 	const id = req.params.id;
 
-	const stmt = db.prepare(`UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ?`).run(user, pass, id);
+	const stmt = db.prepare(`SELECT * FROM userinfo WHERE id = ?`).run(id);
 	res.status(200).json({"message": `1 record updated: ID ${stmt.lastInsertRowid} (200)`});
 });
 
 app.patch("/app/update/:id", (req, res) => {
 	const id = req.params.id;
-	const stmt = db.prepare(`DELETE FROM userinfo WHERE id = ?`).run(id);
+	const user = req.body.user;
+	const pass = md5(req.body.pass);
+
+	const stmt = db.prepare(`UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ?`).run(user, pass, id);
 	res.status(200).json({"message": `1 record deleted: ID ${stmt.lastInsertRowid} (200)`});
 });
 
