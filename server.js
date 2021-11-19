@@ -64,8 +64,8 @@ app.patch("/app/update/:id", (req, res) => {
 	const user = req.body.user;
 	const pass = md5(req.body.pass);
 
-	const stmt = db.prepare(`UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ?`).run(user, pass, id);
-	res.status(200).json({"message": `1 record updated: ID ${id} (200)`});
+	const stmt = db.prepare(`UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ${id}`).run(user, pass);
+	res.status(201).json({"message": `1 record updated: ID ${id} (200)`});
 });
 
 app.delete("/app/delete/user/:id", (req, res) => {
