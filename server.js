@@ -16,7 +16,7 @@ let HTTP_PORT = 5000;
 
 // Start server
 app.listen(HTTP_PORT, () => {
-    console.log("Server running on port %PORT%".replace("%PORT%",HTTP_PORT))
+    //console.log("Server running on port %PORT%".replace("%PORT%",HTTP_PORT))
 });
 // READ (HTTP method GET) at root endpoint /app/
 app.get("/app/", (req, res, next) => {
@@ -37,29 +37,44 @@ app.get("/app/", (req, res, next) => {
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
 
 // Default response for any other request
-app.use(function(req, res){
-	res.json({"message":"Your API is working!"});
-    res.status(404);
+
+app.use("/app/new/", (req, res) => {
+	const user = req.body.user;
+	const pass = md5(req.body.pass);
+
+	const stmt = db.prepare(`INSERT INTO userinfo (user, pass) VALUES (?, ?)`).run(user, pass);
+
+	res.status(201).json({"message": `1 record created: ID ${stmt.lastInsertRowid} (201)`});
 });
 
-app.post("/app/new/user", (req, res) => {
-	res.status(200);
-});
-
-app.get("/app/users", (req, res) => {	
+app.use("/app/users/", (req, res) => {	
 	const stmt = db.prepare("SELECT * FROM userinfo").all();
 	res.status(200).json(stmt);
 });
 
-app.get("/app/user/:id", (req, res) => {
-	res.status(200);
+app.use("/app/user/:id", (req, res) => {
+	const user = req.body.user;
+	const pass = md5(req.body.pass);
+	const id = req.params.id;
+
+	const stmt = db.prepare(`UPDATE userinfo SET user = COALESCE(?,user), pass = COALESCE(?,pass) WHERE id = ?`).run(user, pass, id);
+	res.status(200).json({"message": `1 record updated: ID ${stmt.lastInsertRowid} (200)`});
 });
 
 app.patch("/app/update/:id", (req, res) => {
-	res.status(200);
+	const id = req.params.id;
+	const stmt = db.prepare(`DELETE FROM userinfo WHERE id = ?`).run(id);
+	res.status(200).json({"message": `1 record deleted: ID ${stmt.lastInsertRowid} (200)`});
 });
 
 
 app.delete("/app/delete/user/:id", (req, res) => {
-	res.status(200);
+	const id = req.params.id;
+	const stmt = db.prepare(`DELETE FROM userinfo WHERE id = ?`).run(id);
+	res.status(200).json({"message": `1 record deleted: ID ${stmt.lastInsertRowid} (200)`});
+});
+
+
+app.use(function(req, res){
+    res.status(404);
 });
